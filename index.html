@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UPI Deeplink Chooser Demo</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      background: #f3f4f6;
+      color: #111827;
+    }
+    .card {
+      max-width: 520px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
+      padding: 28px;
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      margin: 0 0 20px;
+      line-height: 1.65;
+      color: #4b5563;
+    }
+    .buttons {
+      display: grid;
+      gap: 14px;
+    }
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      width: 100%;
+    }
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+    }
+    .primary {
+      background: #2563eb;
+      color: white;
+    }
+    .secondary {
+      background: #10b981;
+      color: white;
+    }
+    .note {
+      margin-top: 18px;
+      font-size: 0.92rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>UPI Chooser Demo</h1>
+    <p>Tap a button to open a UPI payment deeplink. On Android devices with UPI apps installed, the system should show a chooser of supported apps.</p>
+
+    <div class="buttons">
+      <button class="primary" onclick="launchUpiLink()">Open UPI Chooser (UPI URI)</button>
+      <button class="secondary" onclick="launchUpiLink('1.00')">Open UPI Chooser (UPI URI ₹1.00)</button>
+      <button class="primary" onclick="launchIntentLink()">Open UPI Chooser (Intent URI)</button>
+      <button class="secondary" onclick="launchIntentLink('1.00')">Open UPI Chooser (Intent URI ₹1.00)</button>
+    </div>
+
+    <div class="links">
+      <h2>Available chooser links</h2>
+      <p>Tap any of these if you want to open a UPI chooser directly from the link.</p>
+      <a class="link-button" href="javascript:void(0)" onclick="copyLink(buildUpiUrl())">Copy UPI URI</a>
+      <a class="link-button" href="javascript:void(0)" onclick="copyLink(buildUpiUrl('1.00'))">Copy UPI URI (₹1.00)</a>
+      <a class="link-button" href="javascript:void(0)" onclick="copyLink(buildIntentUrl())">Copy Intent URI</a>
+      <a class="link-button" href="javascript:void(0)" onclick="copyLink(buildIntentUrl('1.00'))">Copy Intent URI (₹1.00)</a>
+      <p class="note">
+        Note: Most Android browsers or WebViews will show an app chooser when multiple UPI apps are installed. The intent URI uses the Android intent format with scheme=upi and action=VIEW.
+      </p>
+    </div>
+
+    <p class="note">Note: This page works on Android devices and in Android WebViews / browsers that support UPI deeplinks. If no UPI app is installed, the browser may show an error or do nothing.</p>
+  </div>
+
+  <script>
+    const upiParameters = {
+      pa: 'merchant@upi',
+      pn: 'Example Merchant',
+      tn: 'Test payment via UPI deeplink',
+      cu: 'INR'
+    };
+
+    function buildUpiUrl(amount) {
+      const params = new URLSearchParams({
+        pa: upiParameters.pa,
+        pn: upiParameters.pn,
+        tn: upiParameters.tn,
+        cu: upiParameters.cu
+      });
+      if (amount) {
+        params.set('am', amount);
+      }
+      return `upi://pay?${params.toString()}`;
+    }
+
+    function buildIntentUrl(amount) {
+      const base = buildUpiUrl(amount);
+      return `${base}#Intent;scheme=upi;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end`;
+    }
+
+    function launchUpiLink(amount) {
+      const upiUrl = buildUpiUrl(amount);
+      window.location.href = upiUrl;
+    }
+
+    function launchIntentLink(amount) {
+      const intentUrl = buildIntentUrl(amount);
+      window.location.href = intentUrl;
+    }
+
+    function copyLink(link) {
+      navigator.clipboard.writeText(link).then(() => {
+        alert('Copied link to clipboard:\n' + link);
+      }).catch(() => {
+        prompt('Copy this link manually:', link);
+      });
+    }
+  </script>
+</body>
+</html>
