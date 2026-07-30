@@ -96,9 +96,11 @@
 
   <script>
     const upiParameters = {
-      pa: 'merchant@rba',
-      pn: 'Example Merchant',
-      tn: 'Test payment via UPI deeplink',
+      pa: 'swiggytest@ypay',
+      pn: 'bivek rath',
+      mc: '0000',
+      mam: 'absent',
+      url: 'https://google.com',
       cu: 'INR'
     };
 
@@ -106,8 +108,10 @@
       const params = new URLSearchParams({
         pa: upiParameters.pa,
         pn: upiParameters.pn,
-        tn: upiParameters.tn,
-        cu: upiParameters.cu
+        mc: upiParameters.mc,
+        mam: upiParameters.mam,
+        cu: upiParameters.cu,
+        url: upiParameters.url
       });
       if (amount) {
         params.set('am', amount);
